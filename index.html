@@ -3,87 +3,105 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hasibulla Live TV - FIFA World Cup Special</title>
+    <title>Hasibulla Live TV - FIFA World Cup Premium</title>
     <!-- Tailwind CSS CDN for Styling -->
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <!-- Video.js CSS for Player -->
     <link href="https://vjs.zencdn.net/8.10.0/video-js.css" rel="stylesheet" />
     <style>
-        /* ভিডিওটি যেন নিখুঁতভাবে ১৬:৯ ফ্রেমের পুরোটা জুড়ে বসে */
+        /* ভিডিও ফ্রেম লক ও প্রিমিয়াম কার্ভড ইফেক্ট */
         .video-js video {
             object-fit: fill !important;
         }
-        /* কন্ট্রোল বার স্পষ্ট করার জন্য */
+        /* স্পোর্টস ওএস স্টাইল কন্ট্রোল বার */
         .video-js .vjs-control-bar {
             display: flex !important;
-            background: rgba(0, 0, 0, 0.8) !important;
+            background: linear-gradient(to top, rgba(0,0,0,0.9), rgba(0,0,0,0.4)) !important;
+        }
+        /* গ্লোয়িং টেক্সট ইফেক্ট */
+        .glow-text {
+            text-shadow: 0 0 12px rgba(245, 158, 11, 0.4);
         }
     </style>
 </head>
-<body class="bg-gray-900 text-white font-sans">
+<body class="bg-[#0b0f19] text-gray-100 font-sans antialiased selection:bg-amber-500 selection:text-black">
 
-    <!-- Header Section -->
-    <header class="bg-gray-800 p-4 text-center border-b border-gray-700 shadow-md">
-        <h1 class="text-2xl font-bold text-red-500 tracking-wide">⚽ Hasibulla Live TV</h1>
-        <p class="text-xs text-gray-400 mt-1">ফিফা ওয়ার্ল্ড কাপ স্পেশাল পোর্টাল</p>
+    <!-- 🏆 প্রফেশনাল ফিফা স্টাইল হেডার এবং লোগো -->
+    <header class="relative bg-gradient-to-r from-[#0d1527] via-[#16223f] to-[#0d1527] p-6 text-center border-b border-amber-500/20 shadow-2xl">
+        <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
+        <div class="relative flex flex-col items-center justify-center gap-2">
+            <!-- ফিফা অফিশিয়াল লোগো ভেক্টর -->
+            <img src="https://upload.wikimedia.org/wikipedia/commons/a/aa/FIFA_logo_without_slogan.svg" alt="FIFA Logo" class="h-8 md:h-10 brightness-200 drop-shadow-lg">
+            <h1 class="text-3xl md:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-yellow-200 to-amber-500 tracking-wider uppercase glow-text mt-1">
+                Hasibulla Live TV
+            </h1>
+            <div class="flex items-center gap-2 bg-rose-600/20 border border-rose-500/30 px-3 py-1 rounded-full mt-1">
+                <span class="w-2 h-2 bg-rose-500 rounded-full animate-pulse"></span>
+                <p class="text-[11px] font-bold tracking-widest text-rose-400 uppercase">FIFA World Cup Special Portal</p>
+            </div>
+        </div>
     </header>
 
-    <!-- Main Content Area -->
-    <main class="container mx-auto px-4 py-6 max-w-6xl">
+    <!-- মূল কনটেন্ট এরিয়া -->
+    <main class="container mx-auto px-4 py-8 max-w-6xl">
         
-        <!-- Video Player Section -->
-        <div class="flex justify-center mb-6">
-            <div class="w-full lg:w-4/5 max-w-3xl bg-black rounded-xl overflow-hidden shadow-2xl border border-gray-800">
+        <!-- 📺 প্রিমিয়াম ভিডিও প্লেয়ার ডেকোরেশন -->
+        <div class="flex justify-center mb-8">
+            <div class="w-full lg:w-4/5 max-w-3xl bg-black rounded-2xl overflow-hidden shadow-[0_10px_50px_rgba(0,0,0,0.8)] border-2 border-slate-800/80 hover:border-amber-500/40 transition-all duration-500">
                 <video id="my-tv-player" class="video-js vjs-default-skin vjs-big-play-centered vjs-fluid" controls preload="auto" data-setup='{"fluid": true, "aspectRatio": "16:9"}'>
                     <p class="vjs-no-js">এই ভিডিওটি দেখতে ব্রাউজারে জাভাস্ক্রিপ্ট অন করুন।</p>
                 </video>
             </div>
         </div>
 
-        <!-- Search Bar Section -->
-        <div id="search-container" class="mb-8 max-w-md mx-auto">
-            <input type="text" id="search-box" oninput="filterChannels()" placeholder="চ্যানেল বা খেলার নাম দিয়ে সার্চ করুন..." class="w-full px-4 py-2 rounded-lg bg-gray-800 border border-gray-700 text-white focus:outline-none focus:border-red-500 placeholder-gray-500 text-sm">
+        <!-- 🔍 আধুনিক গ্লাসমরফিজম সার্চ বার -->
+        <div id="search-container" class="mb-10 max-w-md mx-auto relative group">
+            <div class="absolute inset-0 bg-gradient-to-r from-amber-500 to-rose-500 rounded-full blur opacity-25 group-hover:opacity-40 transition duration-300"></div>
+            <input type="text" id="search-box" oninput="filterChannels()" placeholder="চ্যানেল বা খেলার নাম দিয়ে সার্চ করুন..." class="relative w-full px-6 py-3.5 rounded-full bg-[#131a2e] border border-slate-700 text-white focus:outline-none focus:border-amber-500 placeholder-gray-500 text-sm shadow-2xl transition-all duration-300">
         </div>
 
-        <hr class="border-gray-800 my-6">
+        <hr class="border-slate-800/60 my-8">
 
-        <!-- মোট চ্যানেল সংখ্যা প্রদর্শন -->
-        <div class="mb-4 text-sm text-gray-400 font-medium">
-            🎯 মোট উপলব্ধি চ্যানেল: <span id="channel-count" class="text-red-500 font-bold">০</span> টি
-        </div>
-
-        <!-- Loading Spinner -->
-        <div id="loading" class="text-center py-12 text-gray-400">
-            <div class="animate-spin inline-block w-8 h-8 border-4 border-current border-t-transparent text-red-500 rounded-full mb-2" role="status"></div>
-            <p>চ্যানেল এবং ক্যাটাগরি সাজানো হচ্ছে, অপেক্ষা করুন...</p>
-        </div>
-
-        <!-- ১. সবার উপরের পিন করা চ্যানেল সেকশন -->
-        <div id="pinned-section" class="mb-10 hidden">
-            <h2 class="text-xl font-bold mb-4 text-amber-400 flex items-center gap-2 border-l-4 border-amber-400 pl-2">
-                🔥 শীর্ষ চ্যানেল (Featured Channels)
-            </h2>
-            <div id="pinned-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-                <!-- জাভাস্ক্রিপ্ট এখানে T Sports, BTV ইত্যাদি বসাবে -->
+        <!-- লাইভ চ্যানেল কাউন্টার ব্যাজ -->
+        <div class="mb-6 flex items-center justify-between bg-[#131a2e]/60 border border-slate-800 px-4 py-2.5 rounded-xl max-w-xs">
+            <span class="text-xs font-semibold uppercase tracking-wider text-gray-400">অবস্থা: অনলাইন</span>
+            <div class="text-sm font-medium text-gray-300">
+                🎯 উপলব্ধ চ্যানেল: <span id="channel-count" class="text-amber-400 font-bold bg-amber-500/10 px-2 py-0.5 rounded-md border border-amber-500/20">০</span> টি
             </div>
         </div>
 
-        <!-- ২. ডাইমানিক ক্যাটাগরি সেকশন (যেখানে খেলাধুলা সবার আগে থাকবে) -->
-        <div id="categories-container" class="space-y-10 hidden">
+        <!-- 🔄 লোডিং স্পিনার (স্পোর্টস থিমড) -->
+        <div id="loading" class="text-center py-16 text-gray-400 bg-[#131a2e]/30 rounded-2xl border border-slate-800/50">
+            <div class="animate-spin inline-block w-10 h-10 border-4浏览 border-amber-500 border-t-transparent rounded-full mb-3 shadow-[0_0_15px_rgba(245,158,11,0.2)]"></div>
+            <p class="text-sm font-medium text-slate-400 tracking-wide">স্পোর্টস নেটওয়ার্কের সাথে যুক্ত হচ্ছে...</p>
+        </div>
+
+        <!-- 🔥 ১. শীর্ষ চ্যানেল সেকশন (পিনড) -->
+        <div id="pinned-section" class="mb-12 hidden">
+            <h2 class="text-lg font-black mb-5 text-amber-400 flex items-center gap-2 border-l-4 border-amber-400 pl-3 tracking-wide uppercase">
+                ⭐ শীর্ষ চ্যানেল (Featured Networks)
+            </h2>
+            <div id="pinned-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                <!-- বাটনগুলো স্ক্রিপ্ট দিয়ে তৈরি হবে -->
+            </div>
+        </div>
+
+        <!-- ⚽ ২. ডাইনামিক ক্যাটাগরি সেকশন -->
+        <div id="categories-container" class="space-y-12 hidden">
             <!-- এখানে আলাদা আলাদা ক্যাটাগরির সারি তৈরি হবে -->
         </div>
 
     </main>
 
-    <!-- Footer -->
-    <footer class="text-center py-6 text-gray-500 text-xs border-t border-gray-800 mt-12">
-        &copy; 2026 Hasibulla Live TV. All Rights Reserved.
+    <!-- ফুটার সেকশন -->
+    <footer class="text-center py-6 text-slate-500 text-xs border-t border-slate-900 bg-[#070a12] mt-20 tracking-wider">
+        &copy; 2026 <span class="text-amber-500 font-semibold">Hasibulla Live TV</span>. Powered by Open Source Sports IPTV.
     </footer>
 
     <!-- Video.js Script CDN -->
     <script src="https://vjs.zencdn.net/8.10.0/video.js"></script>
     
-    <!-- Custom JavaScript Logic -->
+    <!-- কাস্টম জাভাস্ক্রিপ্ট লজিক (সম্পূর্ণ অক্ষুণ্ণ ও ফিক্সড করা) -->
     <script>
         const playlistUrl = 'https://raw.githubusercontent.com/imShakil/tvlink/refs/heads/main/iptv.m3u8';
         
@@ -92,11 +110,9 @@
         let globalCategories = {};
         var player = videojs('my-tv-player');
 
-        // স্মার্ট লোগো ওভাররাইডার ফাংশন (জেনেরিক লোগো দূর করার জন্য)
         function getCleanLogo(name, existingLogo) {
             const nameLower = name.toLowerCase();
             
-            // জনপ্রিয় চ্যানেলগুলোর আসল অফিশিয়াল লোগো ম্যাপ
             const logoMap = {
                 't sports': 'https://upload.wikimedia.org/wikipedia/commons/e/e0/T_Sports_logo.png',
                 'somoy': 'https://upload.wikimedia.org/wikipedia/commons/e/ea/Somoy_TV_Logo.png',
@@ -117,9 +133,8 @@
                 }
             }
 
-            // প্লেলিস্টের জেনেরিক কুৎসিত স্পোর্টস লোগো ফিল্টার আউট করা
             if (existingLogo && (existingLogo.includes('iptv.live') || existingLogo.includes('placeholder') || existingLogo.includes('sports-logo') || existingLogo.includes('tvlink'))) {
-                return ''; // ফাকা রিটার্ন করলে অটোমেটিক ২-অক্ষরের সুন্দর গোল মিনিমাল লোগো বসে যাবে
+                return ''; 
             }
 
             return existingLogo;
@@ -161,7 +176,6 @@
                     currentChannel.name = nameMatch ? nameMatch[1].trim() : 'Unknown Channel';
                     let rawLogo = logoMatch ? logoMatch[1] : '';
                     
-                    // লোগো ক্লিন করা
                     currentChannel.logo = getCleanLogo(currentChannel.name, rawLogo);
                     
                     let category = groupMatch ? groupMatch[1].trim() : 'অন্যান্য';
@@ -223,7 +237,6 @@
             }
         }
 
-        // টাইপো ফিক্সড ব্যাকআপ চ্যানেল সিস্টেম
         function loadFallbackChannels() {
             const fallbackM3U = `#EXTM3U\n` +
                 `#EXTINF:-1 tvg-logo="https://upload.wikimedia.org/wikipedia/commons/e/e0/T_Sports_logo.png" group-title="⚽ খেলাধুলা (Sports)",T Sports\n` +
@@ -243,20 +256,22 @@
             document.getElementById('search-container').insertBefore(alertBox, document.getElementById('search-box'));
         }
 
+        // 🎨 স্পোর্টস কার্ড ডিজাইন আপগ্রেড
         function createChannelButton(channel) {
             const btn = document.createElement('button');
-            btn.className = "bg-gray-800 p-4 rounded-xl flex flex-col items-center justify-center border border-gray-700 hover:border-red-500 hover:scale-105 transition-all duration-200 cursor-pointer text-center h-full w-full";
+            // বাটনগুলোতে লাক্সারি ডার্ক গ্লাস ইফেক্ট এবং গ্লোয়িং বর্ডার ট্রানজিশন যোগ করা হয়েছে
+            btn.className = "group relative bg-gradient-to-b from-[#131a2e] to-[#0e1322] p-4 rounded-xl flex flex-col items-center justify-center border border-slate-800/80 hover:border-amber-500 hover:shadow-[0_0_15px_rgba(245,158,11,0.15)] hover:scale-[1.04] transition-all duration-300 cursor-pointer text-center w-full";
             btn.onclick = () => changeChannel(channel.url);
 
-            let logoHtml = `<div class="w-14 h-14 bg-gradient-to-br from-gray-700 to-gray-600 rounded-full flex items-center justify-center mb-2 font-bold text-red-400 text-sm tracking-wider uppercase shadow-inner">${channel.name.substring(0,2)}</div>`;
+            let logoHtml = `<div class="w-14 h-14 bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl flex items-center justify-center mb-2.5 font-bold text-amber-400 text-sm tracking-wider uppercase border border-slate-700/50 shadow-inner group-hover:border-amber-500/30 transition-all duration-300">${channel.name.substring(0,2)}</div>`;
             
             if (channel.logo) {
-                logoHtml = `<img src="${channel.logo}" alt="${channel.name}" class="w-14 h-14 object-contain mb-2 bg-white p-1 rounded-md shadow" onerror="this.outerHTML='<div class=\'w-14 h-14 bg-gradient-to-br from-gray-700 to-gray-600 rounded-full flex items-center justify-center mb-2 font-bold text-red-400 text-sm\'>${channel.name.substring(0,2)}</div>\''">`;
+                logoHtml = `<img src="${channel.logo}" alt="${channel.name}" class="w-14 h-14 object-contain mb-2.5 bg-white p-1.5 rounded-xl shadow-lg border border-slate-800 group-hover:scale-105 transition-all duration-300" onerror="this.outerHTML='<div class=\'w-14 h-14 bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl flex items-center justify-center mb-2.5 font-bold text-amber-400 text-sm\'>${channel.name.substring(0,2)}</div>\''">`;
             }
 
             btn.innerHTML = `
                 ${logoHtml}
-                <span class="text-xs font-medium block truncate w-full mt-1 text-gray-200">${channel.name}</span>
+                <span class="text-xs font-semibold block truncate w-full tracking-wide text-slate-300 group-hover:text-amber-400 transition-colors duration-300">${channel.name}</span>
             `;
             return btn;
         }
@@ -269,6 +284,7 @@
             });
         }
 
+        // 🎨 ক্যাটাগরি সেকশন টাইটেল ডিজাইন আপগ্রেড
         function renderCategories(categoriesData) {
             const container = document.getElementById('categories-container');
             container.innerHTML = '';
@@ -288,9 +304,10 @@
                 totalChannelsCount += channels.length;
 
                 const catBlock = document.createElement('div');
+                catBlock.className = "bg-[#101626]/30 border border-slate-900/60 p-5 rounded-2xl shadow-xl";
                 
                 const title = document.createElement('h2');
-                title.className = "text-xl font-semibold mb-4 text-gray-300 flex items-center gap-2 border-l-4 border-red-500 pl-2";
+                title.className = "text-lg font-black mb-5 text-slate-200 flex items-center gap-2 border-l-4 border-rose-500 pl-3 tracking-wide";
                 title.innerText = `${catName} (${channels.length})`;
                 
                 const grid = document.createElement('div');
@@ -308,17 +325,13 @@
             document.getElementById('channel-count').innerText = totalChannelsCount;
         }
 
-        // প্লেয়ার রিসেট এবং সিকিউর লিংক আপগ্রেডসহ চ্যানেল পরিবর্তনের কোর ফাংশন
         function changeChannel(streamUrl) {
-            // ১. গিটহাব পেজেসের ব্লকিং এড়াতে http লিংকগুলোকে অটো https করা হলো
             if (window.location.protocol === 'https:' && streamUrl.startsWith('http://')) {
                 streamUrl = streamUrl.replace('http://', 'https://');
             }
 
-            // ২. ব্ল্যাক স্ক্রিন এবং অডিও অনলি বাফারিং দূর করতে ওল্ড ট্র্যাক রিসেট
             player.reset(); 
 
-            // ৩. নতুন করে সোর্স লোড ও প্লে করা
             player.src({
                 src: streamUrl,
                 type: 'application/x-mpegURL'
@@ -356,4 +369,3 @@
     </script>
 </body>
 </html>
-    
