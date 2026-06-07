@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hasibulla Live TV - FIFA World Cup Special</title>
+    <!-- Tailwind CSS CDN for Styling -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <!-- Video.js CSS for Player -->
+    <link href="https://vjs.zencdn.net/8.10.0/video-js.css" rel="stylesheet" />
+    <style>
+        /* ভিডিওটি যেন নিখুঁতভাবে ১৬:৯ ফ্রেমের পুরোটা জুড়ে বসে */
+        .video-js video {
+            object-fit: fill !important;
+        }
+        /* কন্ট্রোল বার স্পষ্ট করার জন্য */
+        .video-js .vjs-control-bar {
+            display: flex !important;
+            background: rgba(0, 0, 0, 0.8) !important;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white font-sans">
+
+    <!-- Header Section -->
+    <header class="bg-gray-800 p-4 text-center border-b border-gray-700 shadow-md">
+        <h1 class="text-2xl font-bold text-red-500 tracking-wide">⚽ Hasibulla Live TV</h1>
+        <p class="text-xs text-gray-400 mt-1">ফিফা ওয়ার্ল্ড কাপ স্পেশাল পোর্টাল</p>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="container mx-auto px-4 py-6 max-w-6xl">
+        
+        <!-- Video Player Section -->
+        <div class="flex justify-center mb-6">
+            <div class="w-full lg:w-4/5 max-w-3xl bg-black rounded-xl overflow-hidden shadow-2xl border border-gray-800">
+                <video id="my-tv-player" class="video-js vjs-default-skin vjs-big-play-centered vjs-fluid" controls preload="auto" data-setup='{"fluid": true, "aspectRatio": "16:9"}'>
+                    <p class="vjs-no-js">এই ভিডিওটি দেখতে ব্রাউজারে জাভাস্ক্রিপ্ট অন করুন।</p>
+                </video>
+            </div>
+        </div>
+
+        <!-- Search Bar Section -->
+        <div id="search-container" class="mb-8 max-w-md mx-auto">
+            <input type="text" id="search-box" oninput="filterChannels()" placeholder="চ্যানেল বা খেলার নাম দিয়ে সার্চ করুন..." class="w-full px-4 py-2 rounded-lg bg-gray-800 border border-gray-700 text-white focus:outline-none focus:border-red-500 placeholder-gray-500 text-sm">
+        </div>
+
+        <hr class="border-gray-800 my-6">
+
+        <!-- মোট চ্যানেল সংখ্যা প্রদর্শন -->
+        <div class="mb-4 text-sm text-gray-400 font-medium">
+            🎯 মোট উপলব্ধি চ্যানেল: <span id="channel-count" class="text-red-500 font-bold">০</span> টি
+        </div>
+
+        <!-- Loading Spinner -->
+        <div id="loading" class="text-center py-12 text-gray-400">
+            <div class="animate-spin inline-block w-8 h-8 border-4 border-current border-t-transparent text-red-500 rounded-full mb-2" role="status"></div>
+            <p>চ্যানেল এবং ক্যাটাগরি সাজানো হচ্ছে, অপেক্ষা করুন...</p>
+        </div>
+
+        <!-- ১. সবার উপরের পিন করা চ্যানেল সেকশন -->
+        <div id="pinned-section" class="mb-10 hidden">
+            <h2 class="text-xl font-bold mb-4 text-amber-400 flex items-center gap-2 border-l-4 border-amber-400 pl-2">
+                🔥 শীর্ষ চ্যানেল (Featured Channels)
+            </h2>
+            <div id="pinned-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                <!-- জাভাস্ক্রিপ্ট এখানে T Sports, BTV ইত্যাদি বসাবে -->
+            </div>
+        </div>
+
+        <!-- ২. ডাইমানিক ক্যাটাগরি সেকশন (যেখানে খেলাধুলা সবার আগে থাকবে) -->
+        <div id="categories-container" class="space-y-10 hidden">
+            <!-- এখানে আলাদা আলাদা ক্যাটাগরির সারি তৈরি হবে -->
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="text-center py-6 text-gray-500 text-xs border-t border-gray-800 mt-12">
+        &copy; 2026 Hasibulla Live TV. All Rights Reserved.
+    </footer>
+
+    <!-- Video.js Script CDN -->
+    <script src="https://vjs.zencdn.net/8.10.0/video.js"></script>
+    
+    <!-- Custom JavaScript Logic -->
+    <script>
+        const playlistUrl = 'https://raw.githubusercontent.com/imShakil/tvlink/refs/heads/main/iptv.m3u8';
+        
+        let globalPinned = [];
+        let globalCategories = {};
+        var player = videojs('my-tv-player');
+
+        // 🚀 ফিক্স ১: window.onload বাদ দিয়ে সরাসরি এই ফাংশনটি নিচে কল করা হয়েছে যেন ইনস্ট্যান্ট রান হয়
+        async function initPortal() {
+            try {
+                // ফেচ করার জন্য ৫ সেকেন্ডের একটি টাইমআউট সেট করা হলো
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 6000);
+
+                const response = await fetch(playlistUrl, { signal: controller.signal });
+                clearTimeout(timeoutId);
+
+                if (!response.ok) throw new Error('Network response was not ok');
+                const data = await response.text();
+                parseM3UAndCategorize(data);
+            } catch (error) {
+                console.error("Main list failed, loading fallback...", error);
+                // গিটহাব লোড না হলে এই ব্যাকআপ লিস্টটি সেকেন্ডের মধ্যে চালু হয়ে যাবে
+                loadFallbackChannels();
+            }
+        }
+
+        function parseM3UAndCategorize(data) {
+            const lines = data.split('\n');
+            let currentChannel = {};
+            
+            const priorityKeywords = ['t sports', 'btv', 'somoy tv', 'i screen', 'iscreen'];
+            let pinnedChannels = [];
+            let categories = {};
+
+            for (let i = 0; i < lines.length; i++) {
+                const line = lines[i].trim();
+                
+                if (line.startsWith('#EXTINF:')) {
+                    const nameMatch = line.match(/,(.+)$/);
+                    const logoMatch = line.match(/tvg-logo="([^"]+)"/);
+                    const groupMatch = line.match(/group-title="([^"]+)"/);
+                    
+                    currentChannel.name = nameMatch ? nameMatch[1].trim() : 'Unknown Channel';
+                    currentChannel.logo = logoMatch ? logoMatch[1] : '';
+                    
+                    let category = groupMatch ? groupMatch[1].trim() : 'অন্যান্য';
+                    
+                    // 🚀 ফিক্স ২: undefined এরর হ্যান্ডলিং যোগ করা হয়েছে (ক্র্যাশ প্রুফ)
+                    const nameLower = (currentChannel.name || '').toLowerCase();
+                    const catLower = (category || '').toLowerCase();
+                    
+                    if (nameLower.includes('sport') || nameLower.includes('cricket') || nameLower.includes('football') || nameLower.includes('sony') || nameLower.includes('star') || nameLower.includes('ten') || nameLower.includes('gtv') || nameLower.includes('gazi') || catLower.includes('sport')) {
+                        category = '⚽ খেলাধুলা (Sports)';
+                    } else if (catLower.includes('news') || nameLower.includes('news')) {
+                        category = '📰 সংবাদ (News)';
+                    } else if (catLower.includes('entertainment') || catLower.includes('general')) {
+                        category = '🎬 বিনোদন (Entertainment)';
+                    } else if (category === 'অন্যান্য' || catLower.includes('others')) {
+                        category = '📺 অন্যান্য চ্যানেল';
+                    }
+                    
+                    currentChannel.category = category;
+
+                } else if (line.startsWith('http')) {
+                    currentChannel.url = line;
+                    const nameLower = (currentChannel.name || '').toLowerCase();
+                    
+                    const isPriority = priorityKeywords.some(keyword => nameLower.includes(keyword));
+                    if (isPriority) {
+                        if (!pinnedChannels.some(c => c.name.toLowerCase() === nameLower)) {
+                            pinnedChannels.push({...currentChannel});
+                        }
+                    }
+
+                    if (!categories[currentChannel.category]) {
+                        categories[currentChannel.category] = [];
+                    }
+                    categories[currentChannel.category].push({...currentChannel});
+
+                    currentChannel = {}; 
+                }
+            }
+            
+            globalPinned = pinnedChannels;
+            globalCategories = categories;
+
+            renderUI();
+        }
+
+        // ইউজার ইন্টারফেস দেখানোর ফাংশন
+        function renderUI() {
+            document.getElementById('loading').classList.add('hidden');
+
+            if (globalPinned.length > 0) {
+                document.getElementById('pinned-section').classList.remove('hidden');
+                displayGrid(globalPinned, 'pinned-grid');
+            }
+
+            document.getElementById('categories-container').classList.remove('hidden');
+            renderCategories(globalCategories);
+
+            if (globalPinned.length > 0) {
+                changeChannel(globalPinned[0].url);
+            }
+        }
+
+        // নেটওয়ার্ক স্লো বা ব্লক থাকলে এই অফলাইন ব্যাকআপটি কাজ করবে
+        function loadFallbackChannels() {
+            const fallbackM3U = `#EXTM3U\n` +
+                `#EXTINF:-1 tvg-logo="https://i.ibb.co/vxs7977/tsports.png" group-title="⚽ খেলাধুলা (Sports)",T Sports\n` +
+                `https://mstdn.live/tsports/index.m3u8n` +
+                `#EXTINF:-1 tvg-logo="https://i.ibb.co/B2vX67X/btv.png" group-title="📺 অন্যান্য চ্যানেল",BTV\n` +
+                `https://mstdn.live/btv/index.m3u8n` +
+                `#EXTINF:-1 tvg-logo="https://i.ibb.co/0Vp3Yqy/somoy.png" group-title="📰 সংবাদ (News)",Somoy TV\n` +
+                `https://mstdn.live/somoy/index.m3u8n` +
+                `#EXTINF:-1 tvg-logo="" group-title="🎬 বিনোদন (Entertainment)",i Screen\n` +
+                `https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8`;
+
+            parseM3UAndCategorize(fallbackM3U);
+
+            // ইউজারকে একটি ছোট নোটিশ দেখানো
+            const alertBox = document.createElement('div');
+            alertBox.className = "bg-amber-600 text-white text-xs text-center py-2 rounded-lg mb-4 font-medium";
+            alertBox.innerText = "⚠️ ভিপিএন বা নেটওয়ার্ক সমস্যার কারণে ব্যাকআপ চ্যানেল লিস্ট সচল করা হয়েছে।";
+            document.getElementById('search-container').insertBefore(alertBox, document.getElementById('search-box'));
+        }
+
+        function createChannelButton(channel) {
+            const btn = document.createElement('button');
+            btn.className = "bg-gray-800 p-4 rounded-xl flex flex-col items-center justify-center border border-gray-700 hover:border-red-500 hover:scale-105 transition-all duration-200 cursor-pointer text-center";
+            btn.onclick = () => changeChannel(channel.url);
+
+            let logoHtml = `<div class="w-14 h-14 bg-gray-700 rounded-full flex items-center justify-center mb-2 font-bold text-red-400 text-sm">${channel.name.substring(0,2)}</div>`;
+            
+            if (channel.logo) {
+                logoHtml = `<img src="${channel.logo}" alt="${channel.name}" class="w-14 h-14 object-contain mb-2 bg-white p-1 rounded-md" onerror="this.outerHTML='<div class=\'w-14 h-14 bg-gray-700 rounded-full flex items-center justify-center mb-2 font-bold text-red-400 text-sm\'>${channel.name.substring(0,2)}</div>'">`;
+            }
+
+            btn.innerHTML = `
+                ${logoHtml}
+                <span class="text-xs font-medium block truncate w-full">${channel.name}</span>
+            `;
+            return btn;
+        }
+
+        function displayGrid(channels, gridId) {
+            const grid = document.getElementById(gridId);
+            grid.innerHTML = '';
+            channels.forEach(channel => {
+                grid.appendChild(createChannelButton(channel));
+            });
+        }
+
+        function renderCategories(categoriesData) {
+            const container = document.getElementById('categories-container');
+            container.innerHTML = '';
+
+            const sortedCategoryKeys = Object.keys(categoriesData).sort((a, b) => {
+                if (a.includes('খেলাধুলা')) return -1;
+                if (b.includes('খেলাধুলা')) return 1;
+                return a.localeCompare(b);
+            });
+
+            let totalChannelsCount = 0;
+
+            sortedCategoryKeys.forEach(catName => {
+                const channels = categoriesData[catName];
+                if (channels.length === 0) return;
+
+                totalChannelsCount += channels.length;
+
+                const catBlock = document.createElement('div');
+                
+                const title = document.createElement('h2');
+                title.className = "text-xl font-semibold mb-4 text-gray-300 flex items-center gap-2 border-l-4 border-red-500 pl-2";
+                title.innerText = `${catName} (${channels.length})`;
+                
+                const grid = document.createElement('div');
+                grid.className = "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4";
+                
+                channels.forEach(channel => {
+                    grid.appendChild(createChannelButton(channel));
+                });
+
+                catBlock.appendChild(title);
+                catBlock.appendChild(grid);
+                container.appendChild(catBlock);
+            });
+
+            document.getElementById('channel-count').innerText = totalChannelsCount;
+        }
+
+        function changeChannel(streamUrl) {
+            player.src({
+                src: streamUrl,
+                type: 'application/x-mpegURL'
+            });
+            player.play();
+        }
+
+        function filterChannels() {
+            const searchTxt = document.getElementById('search-box').value.toLowerCase();
+            
+            const filteredPinned = globalPinned.filter(c => c.name.toLowerCase().includes(searchTxt));
+            if(filteredPinned.length > 0 || searchTxt === '') {
+                document.getElementById('pinned-section').classList.remove('hidden');
+                displayGrid(filteredPinned, 'pinned-grid');
+            } else {
+                document.getElementById('pinned-section').classList.add('hidden');
+            }
+
+            let filteredCats = {};
+            for (let cat in globalCategories) {
+                const filteredList = globalCategories[cat].filter(c => c.name.toLowerCase().includes(searchTxt));
+                if (filteredList.length > 0) {
+                    filteredCats[cat] = filteredList;
+                }
+            }
+            renderCategories(filteredCats);
+        }
+
+        // 🚀 এখানে সরাসরি ফাংশন রান করা হলো, কোনো ওনলোড ডিলে থাকবে না
+        initPortal();
+    </script>
+</body>
+  </html>
+      
